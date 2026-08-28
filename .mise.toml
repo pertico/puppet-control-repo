@@ -1,0 +1,23 @@
+# .mise.toml
+[tools]
+ruby = "3.2.2"   # Versión Ruby compatible con Puppet 7.34 y Puppet 8
+
+[env]
+# Añade los ejecutables de gemas de usuario al PATH
+PATH = "vendor/bundle/bin:$PATH"
+
+[tasks.validate]
+description = "Valida la sintaxis de manifiestos y plantillas"
+run = "bundle exec puppet parser validate manifests/site.pp site-modules/"
+
+[tasks.lint]
+description = "Analiza el estilo y buenas prácticas de Puppet"
+run = "bundle exec puppet-lint site-modules/"
+
+[tasks.test]
+description = "Simula la compilación del catálogo localmente (Masterless)"
+run = "bundle exec puppet apply --modulepath=site-modules:modules --hiera_config=hiera.yaml --noop manifests/site.pp"
+
+[tasks.check]
+description = "Ejecuta todas las validaciones previas al commit"
+depends = ["validate", "lint"]

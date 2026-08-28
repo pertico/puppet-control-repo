@@ -2,3 +2,14 @@
 /modules/
 /.librarian/
 /.tmp/
+
+# Entorno de desarrollo aislado (mise y bundler)
+/vendor/bundle/
+/.bundle/
+#/.mise.toml
+/.modules_test/
+
+# Módulos gestionados por r10k
+/modules/
+/.librarian/
+/.tmp/
