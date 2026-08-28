@@ -10,7 +10,7 @@ class profiles::tools::minikube (
   String  $binary_suffix = '-linux-amd64',
 ) {
 
-  tools::tool { 'minikube':
+  profiles::tools::tool { 'minikube':
     enabled       => $enabled,
     version       => $version,
     repo          => $repo,
@@ -23,7 +23,7 @@ class profiles::tools::minikube (
     exec { 'minikube_completion':
       command => '/usr/local/bin/minikube completion bash > /etc/bash_completion.d/minikube',
       creates => '/etc/bash_completion.d/minikube',
-      require => Tools::Tool['minikube'],
+      require => Profiles::Tools::Tool['minikube'],
     }
   }
 }

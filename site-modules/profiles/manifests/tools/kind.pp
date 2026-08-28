@@ -9,7 +9,7 @@ class profiles::tools::kind (
   Array   $binaries      = ['kind'],
   String  $binary_suffix = '-linux-amd64',
 ) {
-  tools::tool { 'kind':
+  profiles::tools::tool { 'kind':
     enabled       => $enabled,
     version       => $version,
     repo          => $repo,

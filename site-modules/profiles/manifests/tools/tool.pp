@@ -1,5 +1,5 @@
-# modules/tools/manifests/tool.pp
-define tools::tool (
+# site-modules/profiles/tools/manifests/tool.pp
+define profiles::tools::tool (
   Boolean $enabled       = false,
   String  $version       = 'latest',
   String  $repo          = undef,

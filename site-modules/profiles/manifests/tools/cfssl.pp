@@ -10,7 +10,7 @@ class profiles::tools::cfssl (
   String  $binary_suffix = '_1.6.5_linux_amd64',
 ) {
   # Invocamos el tipo definido del módulo componente con sus datos específicos
-  tools::tool { 'cfssl':
+  profiles::tools::tool { 'cfssl':
     enabled       => $enabled,
     version       => $version,
     repo          => $repo,
