@@ -1,0 +1,4 @@
+# Módulos gestionados exclusivamente por r10k
+/modules/
+/.librarian/
+/.tmp/

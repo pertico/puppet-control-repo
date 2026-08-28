@@ -1,0 +1,12 @@
+# data/common.yaml
+---
+timezone::timezone: "Europe/Madrid"
+timezone::autoupgrade: true               #  Asegura que el paquete tzdata se mantenga actualizado
+# timezone::hwutc: true                   # Define si el reloj de hardware está en UTC
+
+profiles::base::systemd_resolved::dns:
+  - '10.89.224.24'
+  - '10.89.224.18'
+profiles::base::systemd_resolved::domains:
+  - 'dpcoruna.local'
+  - 'local'

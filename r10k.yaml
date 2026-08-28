@@ -1,0 +1,9 @@
+# /etc/puppetlabs/r10k/r10k.yaml
+cachedir: '/var/cache/r10k'
+
+sources:
+  local_control_repo:
+    # Ruta absoluta al repositorio git local en el sistema
+    remote: '~/projects/puppet-control-repo'
+    # Destino donde Puppet buscará el entorno 'production'
+    basedir: '/etc/puppetlabs/code/environments'
