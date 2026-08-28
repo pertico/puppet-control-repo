@@ -8,4 +8,4 @@ mod 'puppetlabs-inifile',  '6.1.0'
 mod 'saz-timezone',        '6.2.0'
 
 # Módulo para gestión de debconf
-mod 'hercules-debconf',    '5.0.0'
+mod 'puppet-debconf',    '5.0.0'
