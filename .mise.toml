@@ -22,8 +22,9 @@ if [ ! -f "spec/onceover.yaml" ]; then
 fi
 """
 
-[tasks.clean]
+[tasks."clean:all"]
 description = "Limpia el entorno local para empezar de cero"
+depends = ["clean"]
 run = "rm -rf .gems/ .bundle/ Gemfile.lock .onceover/ spec/fixtures/modules/ && mise prune && mise reshim"
 
 [tasks.validate]
@@ -38,3 +39,17 @@ run = "bundle exec puppet apply --noop --detailed-exitcodes --modulepath=site-mo
 [tasks.test]
 description = "Ejecuta compilación en paralelo de Roles y Perfiles con Onceover"
 run = "bundle exec onceover run spec --parallel"
+
+[tasks.modules]
+description = "Instala o actualiza los módulos del Puppetfile con r10k"
+sources = ["Puppetfile"]
+outputs = ["modules"]
+env = { R10K_CACHEDIR = ".r10k-cache" }
+run = "bundle exec r10k puppetfile install --verbose --moduledir=modules"
+
+[tasks.clean]
+description = "Elimina los módulos externos descargados y las cachés locales de r10k/g10k"
+run = [
+  "rm -rf modules .r10k-cache .g10k-cache",
+  "echo 'Entorno de módulos y caché limpiado.'"
+]
