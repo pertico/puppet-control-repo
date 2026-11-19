@@ -1,0 +1,31 @@
+[tools]
+ruby = "3.4"
+# Opcional: si prefieres usar g10k (más rápido que r10k) y está disponible en tu sistema/aqua:
+# "aqua:xorpaul/g10k" = "latest"
+
+[env]
+BUNDLE_PATH = ".bundle"
+
+[tasks.deps]
+description = "Descarga módulos del Puppetfile usando r10k"
+run = "bundle exec r10k puppetfile install --verbose --moduledir=modules"
+
+[tasks.validate-puppet]
+description = "Valida sintaxis de manifiestos y plantillas EPP"
+run = [
+  "find site-modules manifests -name '*.pp' -print0 | xargs -0 -r bundle exec puppet parser validate",
+  "find site-modules -name '*.epp' -print0 | xargs -0 -r bundle exec puppet epp validate"
+]
+
+[tasks.validate-hiera]
+description = "Verifica que todos los YAML de Hiera sean válidos"
+run = "ruby -ryaml -e 'Dir.glob(\"{data,hiera}/**/*.{yaml,yml}\").each { |f| YAML.load_file(f); puts \"OK: #{f}\" }'"
+
+[tasks.lint]
+description = "Ejecuta puppet-lint en los módulos propios (site-modules)"
+run = "bundle exec puppet-lint --no-documentation-check site-modules/"
+
+[tasks.check]
+description = "Ejecuta todas las validaciones del control-repo"
+depends = ["validate-puppet", "validate-hiera", "lint"]
+
