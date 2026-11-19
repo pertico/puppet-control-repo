@@ -1,12 +1,20 @@
-# Gemfile
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-# Gemas principales (Puppet 7.34 y r10k)
-gem 'puppet', '7.34.0'
-gem 'r10k', '~> 3.15'
+# Motor principal OpenVox y Facter comunitario
+gem "openvox", "~> 8.34"
+gem "openfact"
+gem "json", ">=2.6"
 
 group :development, :test do
-  gem 'puppet-lint', '~> 4.0'
-  gem 'puppet-syntax', '~> 4.0'
-  gem 'rspec-puppet', '~> 4.0'
+  # Gestión de Puppetfile
+  gem "r10k"
+  # Soporte para secretos en Hiera (descomenta si usas hiera-eyaml)
+  gem "hiera-eyaml"
+  # Validación de estilo y código
+  gem "puppet-lint"
+  gem "yaml-lint"
+  # Opcional: pruebas de catálogo completo en control-repo
+  # gem "onceover"
+  gem "rspec-puppet"
 end
+
