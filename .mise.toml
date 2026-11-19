@@ -1,23 +1,40 @@
-# .mise.toml
 [tools]
-ruby = "3.2.2"   # Versión Ruby compatible con Puppet 7.34 y Puppet 8
+ruby = "3.2"
+bundler = "latest"
 
 [env]
-# Añade los ejecutables de gemas de usuario al PATH
-PATH = "vendor/bundle/bin:$PATH"
+GEM_HOME = "{{config_root}}/.gems"
+PATH = "{{config_root}}/.gems/bin:{{env.PATH}}"
+FACTER_GEM_HELPER_DISABLE = "true"
+
+[tasks.init]
+description = "Inicializa el entorno por completo (Instala Ruby, gemas y dependencias de testing)"
+run = """
+echo "==> Instala Ruby mediante mise..."
+mise install
+echo "==> Instala gemas (OpenVox, Onceover)..."
+bundle install
+echo "==> Indexa ejecutables..."
+mise reshim
+echo "==> Inicializa Onceover si no existe..."
+if [ ! -f "spec/onceover.yaml" ]; then
+  bundle exec onceover init
+fi
+"""
+
+[tasks.clean]
+description = "Limpia el entorno local para empezar de cero"
+run = "rm -rf .gems/ .bundle/ Gemfile.lock .onceover/ spec/fixtures/modules/ && mise prune && mise reshim"
 
 [tasks.validate]
-description = "Valida la sintaxis de manifiestos y plantillas"
-run = "bundle exec puppet parser validate manifests/site.pp site-modules/"
+description = "Valida sintaxis de manifiestos (.pp) usando el motor de OpenVox"
+run = "bundle exec puppet parser validate manifests/site.pp"
 
-[tasks.lint]
-description = "Analiza el estilo y buenas prácticas de Puppet"
-run = "bundle exec puppet-lint site-modules/"
+[tasks.noop]
+description = "Simula la aplicación de site.pp incluyendo módulos locales y externos descargados por Onceover"
+# CORRECCIÓN: Separamos las tres rutas por dos puntos (:), incluyendo la ruta real donde Onceover descargó stdlib, timezone, etc.
+run = "bundle exec puppet apply --noop --detailed-exitcodes --modulepath=site-modules:modules:.onceover/etc/puppetlabs/code/environments/production/modules manifests/site.pp"
 
 [tasks.test]
-description = "Simula la compilación del catálogo localmente (Masterless)"
-run = "bundle exec puppet apply --modulepath=site-modules:modules --hiera_config=hiera.yaml --noop manifests/site.pp"
-
-[tasks.check]
-description = "Ejecuta todas las validaciones previas al commit"
-depends = ["validate", "lint"]
+description = "Ejecuta compilación en paralelo de Roles y Perfiles con Onceover"
+run = "bundle exec onceover run spec --parallel"
