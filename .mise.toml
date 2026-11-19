@@ -16,16 +16,12 @@ echo "==> Instala gemas (OpenVox, Onceover)..."
 bundle install
 echo "==> Indexa ejecutables..."
 mise reshim
-echo "==> Inicializa Onceover si no existe..."
-if [ ! -f "spec/onceover.yaml" ]; then
-  bundle exec onceover init
-fi
 """
 
 [tasks."clean:all"]
 description = "Limpia el entorno local para empezar de cero"
 depends = ["clean"]
-run = "rm -rf .gems/ .bundle/ Gemfile.lock .onceover/ spec/fixtures/modules/ && mise prune && mise reshim"
+run = "rm -rf .r10k-cache .gems/ .bundle/ Gemfile.lock .onceover/ spec/fixtures/modules/ && mise prune && mise reshim"
 
 [tasks.validate]
 description = "Valida sintaxis de manifiestos (.pp) usando el motor de OpenVox"
@@ -44,8 +40,11 @@ run = "bundle exec onceover run spec --parallel"
 description = "Instala o actualiza los módulos del Puppetfile con r10k"
 sources = ["Puppetfile"]
 outputs = ["modules"]
-env = { R10K_CACHEDIR = ".r10k-cache" }
-run = "bundle exec r10k puppetfile install --verbose --moduledir=modules"
+run = [
+  "mkdir -p .r10k-cache/",
+  "printf 'cachedir: .r10k-cache\n' > .r10k-cache/r10k.yaml",
+  "bundle exec r10k puppetfile install --verbose --moduledir=modules --config=.r10k-cache/r10k.yaml"
+]
 
 [tasks.clean]
 description = "Elimina los módulos externos descargados y las cachés locales de r10k/g10k"

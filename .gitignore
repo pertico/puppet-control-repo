@@ -11,5 +11,6 @@
 
 # Módulos gestionados por r10k
 /modules/
+/.r10k-cache
 /.librarian/
 /.tmp/
