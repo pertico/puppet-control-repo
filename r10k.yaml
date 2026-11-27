@@ -4,6 +4,6 @@ cachedir: '/var/cache/r10k'
 sources:
   local_control_repo:
     # Ruta absoluta al repositorio git local en el sistema
-    remote: '/home/sdkuser/projects/puppet-control-repo'
+    remote: 'https://github.com/pertico/puppet-control-repo.git'
     # Destino donde Puppet buscará el entorno 'production'
     basedir: '/etc/puppetlabs/code/environments'
