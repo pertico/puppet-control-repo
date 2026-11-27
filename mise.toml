@@ -1,10 +1,59 @@
 [tools]
-ruby = "3.4"
-# Opcional: si prefieres usar g10k (más rápido que r10k) y está disponible en tu sistema/aqua:
-# "aqua:xorpaul/g10k" = "latest"
+ruby = "3.2"
+bundler = "latest"
 
 [env]
 BUNDLE_PATH = ".bundle"
+GEM_HOME = "{{config_root}}/.gems"
+PATH = "{{config_root}}/.gems/bin:{{env.PATH}}"
+FACTER_GEM_HELPER_DISABLE = "true"
+
+[tasks.init]
+description = "Inicializa el entorno por completo (Instala Ruby, gemas y dependencias de testing)"
+run = """
+echo "==> Instala Ruby mediante mise..."
+mise install
+echo "==> Instala gemas (OpenVox, Onceover)..."
+bundle install
+echo "==> Indexa ejecutables..."
+mise reshim
+mise run modules
+"""
+
+[tasks."clean:all"]
+description = "Limpia el entorno local para empezar de cero"
+depends = ["clean"]
+run = "rm -rf .r10k-cache .gems/ .bundle/ Gemfile.lock .onceover/ spec/fixtures/modules/ && mise prune && mise reshim"
+
+[tasks.clean]
+description = "Elimina los módulos externos descargados y las cachés locales de r10k/g10k"
+run = [
+  "rm -rf modules .r10k-cache .g10k-cache",
+  "echo 'Entorno de módulos y caché limpiado.'"
+]
+
+[tasks.validate]
+description = "Valida sintaxis de manifiestos (.pp) usando el motor de OpenVox"
+run = "bundle exec puppet parser validate manifests/site.pp"
+
+[tasks.noop]
+description = "Simula la aplicación de site.pp incluyendo módulos locales y externos descargados por Onceover"
+# CORRECCIÓN: Separamos las tres rutas por dos puntos (:), incluyendo la ruta real donde Onceover descargó stdlib, timezone, etc.
+run = "bundle exec puppet apply --noop --detailed-exitcodes --modulepath=site-modules:modules:.onceover/etc/puppetlabs/code/environments/production/modules manifests/site.pp"
+
+[tasks.test]
+description = "Ejecuta compilación en paralelo de Roles y Perfiles con Onceover"
+run = "bundle exec onceover run spec --parallel"
+
+[tasks.modules]
+description = "Instala o actualiza los módulos del Puppetfile con r10k"
+sources = ["Puppetfile"]
+outputs = ["modules"]
+run = [
+  "mkdir -p .r10k-cache/",
+  "printf 'cachedir: .r10k-cache\n' > .r10k-cache/r10k.yaml",
+  "bundle exec r10k puppetfile install --verbose --moduledir=modules --config=.r10k-cache/r10k.yaml"
+]
 
 [tasks.deps]
 description = "Descarga módulos del Puppetfile usando r10k"
