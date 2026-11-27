@@ -36,10 +36,18 @@ run = [
 description = "Valida sintaxis de manifiestos (.pp) usando el motor de OpenVox"
 run = "bundle exec puppet parser validate manifests/site.pp"
 
-[tasks.noop]
+[tasks.site]
 description = "Simula la aplicación de site.pp incluyendo módulos locales y externos descargados por Onceover"
 # CORRECCIÓN: Separamos las tres rutas por dos puntos (:), incluyendo la ruta real donde Onceover descargó stdlib, timezone, etc.
-run = "bundle exec puppet apply --noop --detailed-exitcodes --modulepath=site-modules:modules:.onceover/etc/puppetlabs/code/environments/production/modules manifests/site.pp"
+run = "bundle exec puppet apply --noop --detailed-exitcodes --hiera_config=hiera.yaml --modulepath=site-modules:modules:.onceover/etc/puppetlabs/code/environments/production/modules manifests/site.pp"
+
+[tasks.noop]
+description = "Simula la aplicación de una clase o rol en local (--noop). Uso: mise run noop profiles::base"
+run = "bundle exec puppet apply --noop --hiera_config=hiera.yaml --modulepath=site-modules:modules -e \"include {{arg(name='class')}}\""
+
+[tasks.lookup]
+description = "Consulta una clave en Hiera con explicación. Uso: mise run lookup timezone::timezone"
+run = "bundle exec puppet lookup --hiera_config=hiera.yaml --modulepath=site-modules:modules --explain {{arg(name='key')}}"
 
 [tasks.test]
 description = "Ejecuta compilación en paralelo de Roles y Perfiles con Onceover"
